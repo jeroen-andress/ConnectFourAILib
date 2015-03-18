@@ -1,4 +1,4 @@
-# Automake file.  Run ./autogen.sh to generate Makefile.in, etc.
+# Thx @ https://github.com/roryyorke/swig-python-autotools-example 
 
 # Use the m4/ directory for macros
 ACLOCAL_AMFLAGS = -I m4
