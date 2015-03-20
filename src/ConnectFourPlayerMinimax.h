@@ -6,6 +6,10 @@
 
 class ConnectFourPlayerMinimax: public ConnectFourPlayerInterface
 {
+#ifdef USEMULTITHREADING
+friend void *MiniMaxThread(void *);
+#endif
+
 protected:
     int _Depth;
 

@@ -9,8 +9,35 @@
 #include <vector>
 #include <iostream>
 #include <iterator>
+#ifdef USEMULTITHREADING
+#include <pthread.h>
+#endif
 
 using namespace std;
+
+#ifdef USEMULTITHREADING
+struct MiniMaxThreadHelper
+{
+    ConnectFourPlayerMinimax *Instance;
+    ConnectFourPlayboard Playboard;
+    int Column;
+};
+
+void *MiniMaxThread(void *Argument)
+{
+    MiniMaxThreadHelper *Helper = (MiniMaxThreadHelper *)Argument;
+    Helper->Playboard.Move(Helper->Column, Helper->Instance->_Player);
+
+    int *Result = new int;
+    *Result = Helper->Instance->Minimax(Helper->Playboard, 1);
+
+#ifdef DEBUG
+    cout << Helper->Column << ": Result=" << *Result << endl;
+#endif
+
+    return Result;
+}
+#endif
 
 ConnectFourPlayerMinimax::ConnectFourPlayerMinimax(ConnectFourPlayboard &Playboard, ConnectFourPlayboard::Player Player, const int Depth): ConnectFourPlayerInterface(Playboard, Player), _Depth(Depth)
 {
@@ -18,6 +45,49 @@ ConnectFourPlayerMinimax::ConnectFourPlayerMinimax(ConnectFourPlayboard &Playboa
 
 int ConnectFourPlayerMinimax::MakeMove()
 {
+#ifdef USEMULTITHREADING
+    vector<pthread_t> Threads;
+    Threads.reserve(_Playboard.GetColumns());
+
+    vector<MiniMaxThreadHelper> Helper(_Playboard.GetColumns());
+
+    for (int i = 0; i < _Playboard.GetColumns(); i++)
+    {
+         if (_Playboard.IsInsertAble(i))
+         {
+             Helper[i].Instance = this;
+             Helper[i].Playboard = _Playboard;
+             Helper[i].Column = i;
+    
+             pthread_t Thread;
+             if (pthread_create(&Thread, NULL, MiniMaxThread, &Helper[i]) != 0)
+             {
+                  return -1;
+             }
+    
+             Threads.push_back(Thread);
+         }
+    }
+
+    int MaxValue = numeric_limits<int>::min(), MaxPos = -1;
+    for (vector<pthread_t>::iterator i = Threads.begin(); i != Threads.end(); i++)
+    {
+         void *ResultValue;
+         pthread_join(*i, &ResultValue);
+
+         int Result = *((int *)ResultValue);
+         delete (int*)ResultValue;
+
+         if (Result > MaxValue)
+         {
+              MaxValue = Result;
+              MaxPos = distance(Threads.begin(), i);
+         }
+    }
+
+    _Playboard.Move(MaxPos, _Player);
+    return MaxPos;
+#else
     vector<int> Val(_Playboard.GetColumns());
 
     for (int i = 0; i < _Playboard.GetColumns(); i++)
@@ -43,6 +113,7 @@ int ConnectFourPlayerMinimax::MakeMove()
 
     _Playboard.Move(MaxPos, _Player);
     return MaxPos;
+#endif
 }
 
 int ConnectFourPlayerMinimax::Minimax(ConnectFourPlayboard Playboard, const int Depth)

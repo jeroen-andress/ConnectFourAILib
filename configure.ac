@@ -16,6 +16,8 @@ AX_PYTHON_DEVEL
 AX_PKG_SWIG([], [], [ AC_MSG_ERROR([SWIG is required to build.]) ])
 AX_SWIG_PYTHON
 
+AC_DEFINE(USEMULTITHREADING)
+
 # Use libtool to link libraries and modules
 LT_INIT
 
