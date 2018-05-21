@@ -1,6 +1,6 @@
 PYTHON_CONFIG=python3.6-config
 CFLAGS=-fPIC -I src
-LDFLAGS=-shared `$(PYTHON_CONFIG) --ldflags` -lstdc++
+LDFLAGS=-shared `$(PYTHON_CONFIG) --ldflags`
 CC=g++
 OBJ=ConnectFourAI_wrap.o ConnectFourPlayboard.o ConnectFourPlayerHuman.o ConnectFourPlayerInterface.o ConnectFourPlayerMinimaxAlphaBeta.o ConnectFourPlayerMinimax.o
 I=ConnectFourAI.i
@@ -21,7 +21,7 @@ clean:
 	rm -rf build/* 
 
 %_wrap.o: %_wrap.cpp 
-	$(CC) $(CFLAGS) `$(PYTHON_CONFIG) --includes` `$(PYTHON_CONFIG) --cflags` -c build/$(subst .o,.cpp,$@) -o build/$@
+	$(CC) $(CFLAGS) `$(PYTHON_CONFIG) --includes` `$(PYTHON_CONFIG) --cflags` -c build/$< -o build/$@
 
 %.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $< -o build/$@
