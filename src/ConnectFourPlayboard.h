@@ -8,6 +8,7 @@ class ConnectFourPlayboard
 public:
     enum Player {NONE = 0, RED = 1, WHITE = 2};
 
+    ConnectFourPlayboard(const ConnectFourPlayboard&);
     ConnectFourPlayboard();
 
     bool Move(const int Column, const Player Type);
