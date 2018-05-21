@@ -20,7 +20,7 @@ def main():
     AIMove = AIPlayer.MakeMove()
     t1 = time.time()
   
-    print "AI choose column %d in %.2fs:" % (AIMove, (t1-t0))
+    print('AI choose column %d in %.2fs:' % (AIMove, (t1-t0)))
   
   print(Playboard.ToString())
   
