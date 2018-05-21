@@ -16,6 +16,17 @@ ConnectFourPlayboard::ConnectFourPlayboard()
     }
 }
 
+ConnectFourPlayboard::ConnectFourPlayboard(const ConnectFourPlayboard &Other)
+{
+    for (int row = 0; row < GetRows(); row++)
+    {
+        for (int col = 0; col < GetColumns(); col++)
+        {
+            SetField(row, col, Other.GetField(row, col));
+        }
+    }
+}
+
 bool ConnectFourPlayboard::MoveWhite(const int Column)
 {
     return Move(Column, WHITE);
